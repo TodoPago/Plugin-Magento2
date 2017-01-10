@@ -10,7 +10,7 @@
 		<label>Estados del Pedido</label>
 		<field id="inicial" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">  
 			<label>Estado inical del pedido</label>  
-			<commnet>Para pagos con tarjetas de credito mientras espera respuesta del gateway</commnet>
+			<comment>Para pagos con tarjetas de credito mientras espera respuesta del gateway</comment>
 			<source_model>Prisma\TodoPago\Model\Config\Source\Order\Status</source_model>  
 		</field> 
 		<field id="aprobado" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">  
