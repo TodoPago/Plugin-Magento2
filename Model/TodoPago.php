@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2015 Magento. All rights reserved.
+ * Copyright ï¿½ 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Prisma\TodoPago\Model;
@@ -445,5 +445,15 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		$res = $this->_tpConnector->getStatus(array("MERCHANT" => $this->_tpConnector->getMerchant(), "OPERATIONID" => $order->getIncrementId()));
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - Response: " . json_encode($res));
 		return $res;
+	}
+
+	/**
+	 * Return success page url
+	 *
+	 * @return string
+	 */
+	public function getOrderPlaceRedirectUrl()
+	{
+		return $this->_urlInterface->getUrl('checkout/onepage/success');
 	}
 }

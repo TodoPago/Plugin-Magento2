@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2015 Inchoo d.o.o.
+ * Copyright ï¿½ 2015 Inchoo d.o.o.
  * created by Zoran Salamun(zoran.salamun@inchoo.net)
  */
 namespace Prisma\TodoPago\Controller\Payment;
@@ -40,7 +40,12 @@ class Secondstep extends \Magento\Framework\App\Action\Action
      * @var Transaction\BuilderInterface
      */
     protected $transactionBuilder;
-	
+
+	/**
+	 * @var OrderSender
+	 */
+	protected $_orderSender;
+
     /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -52,7 +57,8 @@ class Secondstep extends \Magento\Framework\App\Action\Action
         \Psr\Log\LoggerInterface $logger,
         PaymentHelper $paymentHelper,
         \Magento\Sales\Api\TransactionRepositoryInterface $transactionRepository,
-        \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder
+        \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder,
+		\Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
     ) {
         parent::__construct($context);
         $this->scopeConfig = $scopeConfig;
@@ -61,6 +67,7 @@ class Secondstep extends \Magento\Framework\App\Action\Action
         $this->_paymentHelper = $paymentHelper;
         $this->transactionRepository = $transactionRepository;
         $this->transactionBuilder = $transactionBuilder;
+		$this->_orderSender = $orderSender;
     }
 	
     /**
@@ -154,6 +161,8 @@ class Secondstep extends \Magento\Framework\App\Action\Action
 			->setIsCustomerNotified(true);
 			
 			$order->save();
+
+			$this->_sendNewOrderMail($order);
 			
 			$this->_redirect('checkout/onepage/success');			
         } catch (\Exception $e) {
@@ -208,4 +217,18 @@ class Secondstep extends \Magento\Framework\App\Action\Action
             $this->_redirect('checkout/onepage/failure');
         }
     }
+
+	/**
+	 * Send new order Mail
+	 */
+	protected function _sendNewOrderMail(\Magento\Sales\Model\Order $order)
+	{
+		if ($order->getCanSendNewEmailFlag() && !$order->getEmailSent()) {
+			try {
+				$this->_orderSender->send($order);
+			} catch (\Exception $e) {
+				$this->_logger->critical($e);
+			}
+		}
+	}
 }
